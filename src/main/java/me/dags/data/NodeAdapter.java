@@ -12,11 +12,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import me.dags.data.node.Node;
-import me.dags.data.node.NodeReader;
-import me.dags.data.node.NodeWriter;
-import me.dags.data.node.ReaderProvider;
-import me.dags.data.node.WriterProvider;
+import me.dags.data.node.*;
 
 public class NodeAdapter {
 
@@ -75,6 +71,34 @@ public class NodeAdapter {
             e.printStackTrace();
         }
         return Node.NULL;
+    }
+
+    public <T> T from(Node node, Class<T> type) {
+        NodeTypeAdapter<T> adapter = NodeTypeAdapters.of(type);
+        if (adapter != null) {
+            return adapter.fromNode(node);
+        }
+        return null;
+    }
+
+    public <T> T from(InputStream inputStream, Class<T> type) {
+        return from(from(inputStream), type);
+    }
+
+    public <T> T from(Path path, Class<T> type) {
+        return from(from(path), type);
+    }
+
+    public <T> T from(File file, Class<T> type) {
+        return from(from(file), type);
+    }
+
+    public <T> T from(URL url, Class<T> type) {
+        return from(from(url), type);
+    }
+
+    public <T> T from(String string, Class<T> type) {
+        return from(from(string), type);
     }
 
     public String to(Node node) {
