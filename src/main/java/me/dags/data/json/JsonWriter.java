@@ -1,11 +1,11 @@
 package me.dags.data.json;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import me.dags.data.StringUtils;
 import me.dags.data.node.Node;
 import me.dags.data.node.NodeWriter;
-
-import java.io.IOException;
-import java.io.Writer;
 
 public class JsonWriter extends NodeWriter {
 
@@ -13,12 +13,12 @@ public class JsonWriter extends NodeWriter {
     private final String lineBreak;
     private final String padding;
 
-    public JsonWriter(Writer writer) {
-        this(writer, false);
+    public JsonWriter(OutputStream outputStream) {
+        this(outputStream, false);
     }
 
-    public JsonWriter(Writer writer, boolean compact) {
-        super(writer);
+    public JsonWriter(OutputStream outputStream, boolean compact) {
+        super(outputStream);
         indentSpaces = compact ? "" : "    ";
         lineBreak = compact ? "" : "\n";
         padding = compact ? "" : " ";

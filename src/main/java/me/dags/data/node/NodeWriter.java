@@ -2,17 +2,21 @@ package me.dags.data.node;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.Map;
+
+import me.dags.data.StringUtils;
 
 public abstract class NodeWriter implements Closeable {
 
     private final Writer writer;
     private int indents = 0;
 
-    protected NodeWriter(Writer writer) {
-        this.writer = writer;
+    protected NodeWriter(OutputStream outputStream) {
+        this.writer = new OutputStreamWriter(outputStream, StringUtils.UTF_8);
     }
 
     @Override
@@ -141,7 +145,7 @@ public abstract class NodeWriter implements Closeable {
     }
 
     protected void writeString(String string) throws IOException {
-        append(string);
+        append(StringUtils.escapeString(string));
     }
 
     protected final void append(String s) throws IOException {

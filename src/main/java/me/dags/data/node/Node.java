@@ -90,6 +90,6 @@ public class Node {
         if (object == null) {
             return NULL;
         }
-        return NodeAdapters.serialize(object);
+        return NodeTypeAdapters.serialize(object);
     }
 }

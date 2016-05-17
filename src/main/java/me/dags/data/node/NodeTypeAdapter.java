@@ -3,7 +3,7 @@ package me.dags.data.node;
 /**
  * @author dags <dags@dags.me>
  */
-public interface NodeAdapter<T>
+public interface NodeTypeAdapter<T>
 {
     Node toNode(T t);
 

@@ -1,24 +1,25 @@
 package me.dags.data;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.nio.charset.Charset;
 
 /**
  * @author dags <dags@dags.me>
  */
 public class StringUtils {
 
-    private final Matcher escaper = Pattern.compile("\\\\").matcher("");
+    public static final Charset UTF_8 = Charset.forName("UTF-8");
 
     public String safeString(String s) {
-        String esc = escaper.reset(s).replaceAll("\\\\\\\\");
+        String esc = s;
         return !esc.matches("^[a-zA-Z0-9\\.]*$") || esc.isEmpty() ? '"' + esc + '"' : esc;
     }
 
     public static String escapeString(String s) {
         StringBuilder b = new StringBuilder(s.length() * 2);
         for (char c : s.toCharArray()) {
-            if (c >= 128 || c == '"' || c == '\\')
+            if (c == '\n') {
+                b.append("\\n");
+            } else if (c >= 128 || c == '"' || c == '\\')
                 b.append("\\u").append(String.format("%04X", (int) c));
             else
                 b.append(c);
@@ -99,8 +100,15 @@ public class StringUtils {
                 digit = true;
                 continue;
             }
-            if (i == 0 && c == '-' && s.length() > 1) {
-                continue;
+            if (c == '-' && s.length() > 1) {
+                if (i ==  0) {
+                    continue;
+                }
+                char d = s.charAt(i - 1);
+                if (d == 'e' || d == 'E') {
+                    continue;
+                }
+                return false;
             }
             if (digit && !exponent && (exponent = c == 'e' || c == 'E') && s.length() - i > 1) {
                 continue;

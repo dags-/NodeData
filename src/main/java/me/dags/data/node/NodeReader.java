@@ -1,12 +1,12 @@
 package me.dags.data.node;
 
-import sun.nio.cs.StreamDecoder;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.io.InputStreamReader;
 import java.util.Arrays;
+
+import me.dags.data.StringUtils;
 
 /**
  * @author dags <dags@dags.me>
@@ -15,7 +15,7 @@ public abstract class NodeReader implements Closeable {
 
     private static final char UNDEFINED = (char) -2;
 
-    private final StreamDecoder decoder;
+    private final InputStreamReader reader;
     private char last = UNDEFINED;
     private int pos = 0;
 
@@ -23,36 +23,95 @@ public abstract class NodeReader implements Closeable {
     private int bufPos = 0;
 
     protected NodeReader(InputStream inputStream) {
-        this.decoder = StreamDecoder.forInputStreamReader(inputStream, this, Charset.forName("UTF-8"));
+        reader = new InputStreamReader(inputStream, StringUtils.UTF_8);
     }
 
-    public int read() throws IOException {
-        return decoder.read();
+    protected int read() throws IOException {
+        return reader.read();
     }
 
-    public abstract Node readNode() throws IOException;
+    public Node readNode() throws IOException {
+        char c = nextToken();
+        switch (c) {
+            case '{':
+                return readObject();
+            case '[':
+                return readArray();
+            case '"':
+                return readString();
+            default:
+                return readNumber();
+        }
+    }
 
-    public abstract NodeObject readObject() throws IOException;
+    protected NodeObject readObject() throws IOException {
+        NodeObject object = new NodeObject();
+        while (peekToken() != '}') {
+            Node key = readNode();
+            Node value = readNode();
+            object.putValue(key,  value);
+        }
+        next();
+        return object;
+    }
 
-    public abstract NodeArray readArray() throws IOException;
+    protected NodeArray readArray() throws IOException {
+        NodeArray array = new NodeArray();
+        while (peekToken() != ']') {
+            Node element = readNode();
+            array.add(element);
+        }
+        next();
+        return array;
+    }
 
-    public abstract Node readString() throws IOException;
+    protected Node readString() throws IOException {
+        resetBuffer();
+        char c = readChar();
+        boolean escape = false;
+        while (escape || c != '"') {
+            appendToBuffer(c);
+            escape = c == '\\';
+            c = readChar();
+        }
+        return newNode(bufferToString());
+    }
 
-    public abstract Node readNumber() throws IOException;
+    protected Node readNumber() throws IOException {
+        resetBuffer();
+        char c = lastChar();
+        boolean isDouble = false;
+        while (true) {
+            appendToBuffer(c);
+            isDouble = isDouble || c == '.' || c == 'E';
+            if (!isNumberChar(c = readChar())) {
+                previous();
+                break;
+            }
+        }
+        Number number = Double.valueOf(bufferToString());
+        return newNode(isDouble ? number : number.longValue());
+    }
 
-    protected abstract boolean skipChar(char c) throws IOException;
+    protected boolean skipChar(char c) throws IOException {
+        return Character.isWhitespace(c);
+    }
 
-    public Node readFalse() throws IOException {
+    protected boolean isNumberChar(char c) {
+        return Character.isDigit(c) || c == '.' || c == '-' || c == 'E' || c == 'e';
+    }
+
+    protected Node readFalse() throws IOException {
         skip(4);
         return Node.FALSE;
     }
 
-    public Node readTrue() throws IOException {
+    protected Node readTrue() throws IOException {
         skip(3);
         return Node.TRUE;
     }
 
-    public Node readNull() throws IOException {
+    protected Node readNull() throws IOException {
         skip(3);
         return Node.NULL;
     }
@@ -119,6 +178,6 @@ public abstract class NodeReader implements Closeable {
 
     @Override
     public void close() throws IOException {
-        decoder.close();
+        reader.close();
     }
 }
