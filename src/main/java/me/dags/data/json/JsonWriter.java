@@ -19,9 +19,22 @@ public class JsonWriter extends NodeWriter {
 
     public JsonWriter(OutputStream outputStream, boolean compact) {
         super(outputStream);
-        indentSpaces = compact ? "" : "    ";
+        indentSpaces = compact ? "" : "  ";
         lineBreak = compact ? "" : "\n";
         padding = compact ? "" : " ";
+    }
+
+    protected void swriteKeyValuePair(Node key, Node value) throws IOException {
+        if (!key.isPresent() || key.isBoolean() || key.isNumber()) {
+            append("\"");
+            writeNode(key);
+            append("\"");
+        } else {
+            writeNode(key);
+        }
+        append(keySeparator(key, value));
+        append(padding());
+        writeNode(value);
     }
 
     @Override

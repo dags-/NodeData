@@ -12,7 +12,13 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import me.dags.data.node.*;
+import me.dags.data.node.Node;
+import me.dags.data.node.NodeReader;
+import me.dags.data.node.NodeTypeAdapter;
+import me.dags.data.node.NodeTypeAdapters;
+import me.dags.data.node.NodeWriter;
+import me.dags.data.node.ReaderProvider;
+import me.dags.data.node.WriterProvider;
 
 public class NodeAdapter {
 
@@ -105,6 +111,7 @@ public class NodeAdapter {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try (NodeWriter writer = writerProvider.get(out)) {
             writer.write(node);
+            writer.flush();
             return out.toString("UTF-8");
         } catch (IOException e) {
             return "{}";

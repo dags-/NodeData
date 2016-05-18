@@ -1,5 +1,6 @@
 package me.dags.data.node;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,8 +59,12 @@ public class NodeTypeAdapters {
         if (object instanceof Map) {
             return serialize((Map) object);
         }
-        if (object instanceof Object[]) {
-            return serialize((Object[]) object);
+        if (object.getClass().isArray()) {
+            Object[] array = new Object[Array.getLength(object)];
+            for (int i = 0; i < array.length; i++) {
+                array[i] = Array.get(object, i);
+            }
+            return serialize(array);
         }
         return new Node(object);
     }

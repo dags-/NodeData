@@ -55,6 +55,18 @@ public class Node {
         return this != NULL;
     }
 
+    public boolean isNumber() {
+        return value instanceof Number;
+    }
+
+    public boolean isString() {
+        return value instanceof String;
+    }
+
+    public boolean isBoolean() {
+        return value instanceof Boolean;
+    }
+
     public boolean isPrimitive() {
         return !isNodeObject() && !isNodeArray();
     }

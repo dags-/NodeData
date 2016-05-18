@@ -100,13 +100,11 @@ public class HoconReader extends NodeReader {
     private String readRaw() throws IOException {
         resetBuffer();
         char c = lastChar();
-        while (!breakRaw(c)) {
+        while(!breakRaw(c)) {
             appendToBuffer(c);
             c = readChar();
         }
-        if (c == ']' || c == '}') {
-            previous();
-        }
+        previous();
         return bufferToString();
     }
 
