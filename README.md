@@ -14,7 +14,7 @@ Example 2:
 public void example2(URL jsonData) {
   NodeAdapter customAdapter = NodeAdapter.builder().readJson().writeHocon().build();
   Node data = customAdapter.from(jsonData);
-  File hoconFile = new File(jsonFile.getParentFile(), "output.hocon");
+  File hoconFile = new File("output.hocon");
   customAdapter.to(data, hoconFile);
 }
 ```
