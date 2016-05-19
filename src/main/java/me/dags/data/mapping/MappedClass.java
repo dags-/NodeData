@@ -20,7 +20,8 @@ public class MappedClass<T> {
         Class<?> c = type;
         do {
             for (Field field : c.getDeclaredFields()) {
-                if (ignoreModifier(field.getModifiers())) {
+                int modifier = field.getModifiers();
+                if (Modifier.isStatic(modifier) || Modifier.isTransient(modifier)) {
                     continue;
                 }
                 fields.add(new MappedField(field));
@@ -29,10 +30,6 @@ public class MappedClass<T> {
         } while (c != null && !(c = c.getSuperclass()).equals(Object.class));
         this.type = type;
         this.fields = Collections.unmodifiableList(fields);
-    }
-
-    private static boolean ignoreModifier(int mod) {
-        return (Modifier.isStatic(mod) && Modifier.isFinal(mod)) || Modifier.isTransient(mod);
     }
 
     static class MappedField {
@@ -44,7 +41,7 @@ public class MappedClass<T> {
         private MappedField(Field field) {
             Mapping mapping = field.getAnnotation(Mapping.class);
             this.name = mapping == null || mapping.name().isEmpty() ? field.getName() : mapping.name();
-            this.comment = mapping == null ? "" : mapping.comment();
+            this.comment = "";
             this.field = field;
         }
 

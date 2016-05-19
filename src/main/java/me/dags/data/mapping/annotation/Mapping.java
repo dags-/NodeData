@@ -10,6 +10,4 @@ import java.lang.annotation.Target;
 public @interface Mapping {
 
     String name() default "";
-
-    String comment() default "";
 }

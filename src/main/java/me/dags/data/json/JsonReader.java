@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import me.dags.data.node.Node;
+import me.dags.data.node.NodeParseException;
 import me.dags.data.node.NodeReader;
 
 public class JsonReader extends NodeReader  {
@@ -32,12 +33,13 @@ public class JsonReader extends NodeReader  {
             case 'N':
                 return readNull();
             case (char) -1:
-                throw new UnsupportedOperationException("Unexpected end!");
+                throw NodeParseException.of("Unexpected end of json inputstream!");
+            default:
+                if (isNumberChar(c)) {
+                    return readNumber();
+                }
+                return readNode();
         }
-        if (isNumberChar(c)) {
-            return readNumber();
-        }
-        return readNode();
     }
 
     @Override

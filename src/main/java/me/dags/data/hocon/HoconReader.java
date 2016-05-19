@@ -6,6 +6,7 @@ import java.io.InputStream;
 import me.dags.data.StringUtils;
 import me.dags.data.node.Node;
 import me.dags.data.node.NodeObject;
+import me.dags.data.node.NodeParseException;
 import me.dags.data.node.NodeReader;
 
 /*
@@ -38,6 +39,8 @@ public class HoconReader extends NodeReader {
             case ':':
             case '=':
                 return readNode();
+            case (char) -1:
+                throw NodeParseException.of("Unexpected end of hocon inputstream!");
             default:
                 return readPrimitive();
         }

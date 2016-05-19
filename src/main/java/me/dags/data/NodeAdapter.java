@@ -19,6 +19,7 @@ import me.dags.data.hocon.HoconWriter;
 import me.dags.data.json.JsonReader;
 import me.dags.data.json.JsonWriter;
 import me.dags.data.node.Node;
+import me.dags.data.node.NodeParseException;
 import me.dags.data.node.NodeReader;
 import me.dags.data.node.NodeTypeAdapter;
 import me.dags.data.node.NodeTypeAdapters;
@@ -26,6 +27,7 @@ import me.dags.data.node.NodeWriter;
 
 public class NodeAdapter {
 
+    private static final String PARSE_ERROR = "An error occurred whilst parsing from %s: %s\n%s";
     private static final Reader JSON_READER = i -> new JsonReader(i);
     private static final Reader HOCON_READER = i -> new HoconReader(i);
     private static final Writer JSON_WRITER = i -> new JsonWriter(i, false);
@@ -46,53 +48,42 @@ public class NodeAdapter {
         this.writerProvider = writer;
     }
 
-    public Node from(InputStream inputStream) {
+    public Node from(InputStream inputStream) throws IOException {
         try (NodeReader reader = readerProvider.provide(inputStream)) {
             return reader.readNode();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return Node.NULL;
     }
 
     public Node from(Path path) {
-        if (Files.exists(path)) {
-            try (NodeReader reader = readerProvider.provide(Files.newInputStream(path))) {
-                return reader.readNode();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            return from(Files.newInputStream(path));
+        } catch (IOException e) {
+            throw NodeParseException.of(PARSE_ERROR, "Path", path, e.getMessage());
         }
-        return Node.NULL;
     }
 
     public Node from(File file) {
-        if (file.exists()) {
-            try (NodeReader reader = readerProvider.provide(new FileInputStream(file))) {
-                return reader.readNode();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            return from(new FileInputStream(file));
+        } catch (IOException e) {
+            throw NodeParseException.of(PARSE_ERROR, "File", file, e.getMessage());
         }
-        return Node.NULL;
     }
 
     public Node from(URL url) {
-        try (NodeReader reader = readerProvider.provide(url.openConnection().getInputStream())) {
-            return reader.readNode();
+        try {
+            return from(url.openConnection().getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw NodeParseException.of(PARSE_ERROR, "URL", url, e.getMessage());
         }
-        return Node.NULL;
     }
 
     public Node from(String in) {
-        try (NodeReader reader = readerProvider.provide(new ByteArrayInputStream(in.getBytes("UTF-8")))) {
-            return reader.readNode();
+        try {
+            return from(new ByteArrayInputStream(in.getBytes("UTF-8")));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw NodeParseException.of(PARSE_ERROR, "String", in, e.getMessage());
         }
-        return Node.NULL;
     }
 
     public <T> T from(Node node, Class<T> type) {
@@ -104,7 +95,11 @@ public class NodeAdapter {
     }
 
     public <T> T from(InputStream inputStream, Class<T> type) {
-        return from(from(inputStream), type);
+        try {
+            return from(from(inputStream), type);
+        } catch (IOException e) {
+            throw NodeParseException.of(PARSE_ERROR, "InputStream", inputStream, e.getMessage());
+        }
     }
 
     public <T> T from(Path path, Class<T> type) {
@@ -220,6 +215,20 @@ public class NodeAdapter {
 
         public Builder writeHoconCompact() {
             writer = HOCON_WRITER_COMPACT;
+            return this;
+        }
+
+        public Builder withReader(Provider.Reader provider) {
+            if (provider != null) {
+                reader = provider;
+            }
+            return this;
+        }
+
+        public Builder withWriter(Provider.Writer provider) {
+            if (provider != null) {
+                writer = provider;
+            }
             return this;
         }
 
