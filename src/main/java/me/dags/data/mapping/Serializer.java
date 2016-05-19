@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
 
-import me.dags.data.mapping.MappedClass.FieldMapping;
+import me.dags.data.mapping.MappedClass.MappedField;
 import me.dags.data.node.Node;
 import me.dags.data.node.NodeObject;
 import me.dags.data.node.NodeTypeAdapter;
@@ -21,7 +21,7 @@ public class Serializer {
     Node serializeObject(Object owner) throws IllegalArgumentException, IllegalAccessException {
         MappedClass<?> mapping = mapper.getMapping(owner.getClass());
         NodeObject object = new NodeObject();
-        for (FieldMapping entry : mapping.fields) {
+        for (MappedField entry : mapping.fields) {
             Object value = entry.field.get(owner);
             Node field = serializeObject(value);
             object.put(entry.name, field);

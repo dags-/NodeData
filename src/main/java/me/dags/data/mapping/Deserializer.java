@@ -9,14 +9,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import me.dags.data.mapping.MappedClass.FieldMapping;
+import me.dags.data.mapping.MappedClass.MappedField;
 import me.dags.data.node.Node;
 import me.dags.data.node.NodeArray;
 import me.dags.data.node.NodeObject;
 
 public class Deserializer {
 
-    private static final Map<Class<?>, Function<Object, Object>> types = types();
+    private static final Map<Class<?>, Function<Object, Object>> primitives = types();
 
     static Map<Class<?>, Function<Object, Object>> types() {
         Map<Class<?>, Function<Object, Object>> types = new HashMap<>();
@@ -58,7 +58,7 @@ public class Deserializer {
         } else if (node.isNodeArray()) {
             return deserializeArray(node.asNodeArray(), type, params);
         } else if (node.isPrimitive()) {
-            Function<Object, Object> func = types.get(type);
+            Function<Object, Object> func = primitives.get(type);
             return func == null ? node.asObject() : func.apply(node.asObject());
         }
         return null;
@@ -67,36 +67,42 @@ public class Deserializer {
     private <T> T deserializeObject(NodeObject object, Class<T> type) throws IllegalArgumentException, IllegalAccessException, InstantiationException {
         MappedClass<T> mapping = mapper.getMapping(type);
         T t = type.newInstance();
-        for (FieldMapping field : mapping.fields) {
-            Node node = object.get(field.name);
-            System.out.println(field.name + ": " + node);
-            Object value = deserializeNode(node, field.type(), field.typeArgs());
-            field.field.set(t, value);
+        for (MappedField field : mapping.fields) {
+            if (object.contains(field.name)) {
+                Node node = object.get(field.name);
+                Object value = deserializeNode(node, field.type(), field.typeArgs());
+                field.field.set(t, value);
+            }
         }
         return t;
     }
 
     private Object deserializeMap(NodeObject object, Class<?> type, Type... params) throws IllegalArgumentException, IllegalAccessException, InstantiationException {
         Map<Object, Object> map = mapper.collectionFactory.supplyMap(type);
-        Class<?> keyType = (Class<?>) params[0];
-        Class<?> valueType = (Class<?>) params[1];
-        for (Map.Entry<Node, Node> entry : object.entries()) {
-            Object key = deserializeNode(entry.getKey(), keyType);
-            Object value = deserializeNode(entry.getValue(), valueType);
-            map.put(key,  value);
+        if (map != null) {
+            Class<?> keyType = (Class<?>) params[0];
+            Class<?> valueType = (Class<?>) params[1];
+            for (Map.Entry<Node, Node> entry : object.entries()) {
+                Object key = deserializeNode(entry.getKey(), keyType);
+                Object value = deserializeNode(entry.getValue(), valueType);
+                map.put(key,  value);
+            }
         }
         return map;
     }
 
     private Object deserializeArray(NodeArray array, Class<?> type, Type... params) throws InstantiationException, IllegalAccessException {
         Collection<Object> collection = type.isArray() ? new ArrayList<>() : mapper.collectionFactory.supplyCollection(type);
-        Class<?> element = type.isArray() ? type.getComponentType() : params.length > 0 ? (Class<?>) params[0] : Object.class;
-        for (Node node : array.values()) {
-            Object value = deserializeNode(node, element);
-            collection.add(value);
+        Object result = null;
+        if (collection != null) {
+            Class<?> paramType = type.isArray() ? type.getComponentType() : params.length > 0 ? (Class<?>) params[0] : Object.class;
+            for (Node node : array.values()) {
+                Object value = deserializeNode(node, paramType);
+                collection.add(value);
+            }
+            result = type.isArray() ? toArray(collection, paramType) : collection;
         }
-        Object value = type.isArray() ? toArray(collection, element) : collection;
-        return type.cast(value);
+        return type.cast(result);
     }
 
     private static Object toArray(Collection<?> collection, Class<?> component) {

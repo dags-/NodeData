@@ -1,7 +1,7 @@
 package me.dags.data.mapping;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import me.dags.data.node.Node;
 
@@ -9,7 +9,7 @@ public class ObjectMapper {
 
     private final Serializer serializer = new Serializer(this);
     private final Deserializer deserializer = new Deserializer(this);
-    private final Map<Class<?>, MappedClass<?>> mappings = new HashMap<>();
+    private final Map<Class<?>, MappedClass<?>> mappings = new ConcurrentHashMap<>();
 
     final CollectionFactory collectionFactory;
 

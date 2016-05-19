@@ -12,18 +12,18 @@ import me.dags.data.mapping.annotation.Mapping;
 
 public class MappedClass<T> {
 
-    final List<FieldMapping> fields;
+    final List<MappedField> fields;
     final Class<T> type;
 
     MappedClass(Class<T> type) {
-        List<FieldMapping> fields = new ArrayList<>();
+        List<MappedField> fields = new ArrayList<>();
         Class<?> c = type;
         do {
             for (Field field : c.getDeclaredFields()) {
                 if (ignoreModifier(field.getModifiers())) {
                     continue;
                 }
-                fields.add(new FieldMapping(field));
+                fields.add(new MappedField(field));
                 field.setAccessible(true);
             }
         } while (c != null && !(c = c.getSuperclass()).equals(Object.class));
@@ -35,13 +35,13 @@ public class MappedClass<T> {
         return (Modifier.isStatic(mod) && Modifier.isFinal(mod)) || Modifier.isTransient(mod);
     }
 
-    static class FieldMapping {
+    static class MappedField {
 
         final String name;
         final String comment;
         final Field field;
 
-        private FieldMapping(Field field) {
+        private MappedField(Field field) {
             Mapping mapping = field.getAnnotation(Mapping.class);
             this.name = mapping == null || mapping.name().isEmpty() ? field.getName() : mapping.name();
             this.comment = mapping == null ? "" : mapping.comment();
