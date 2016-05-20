@@ -129,11 +129,9 @@ public class NodeAdapter {
         }
     }
 
-    public void to(Node node, OutputStream out) {
+    public void to(Node node, OutputStream out) throws IOException {
         try (NodeWriter writer = writerProvider.provide(out)) {
             writer.write(node);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

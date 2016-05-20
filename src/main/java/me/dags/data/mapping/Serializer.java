@@ -18,17 +18,6 @@ public class Serializer {
         this.mapper = mapper;
     }
 
-    Node serializeObject(Object owner) throws IllegalArgumentException, IllegalAccessException {
-        MappedClass<?> mapping = mapper.getMapping(owner.getClass());
-        NodeObject object = new NodeObject();
-        for (MappedField entry : mapping.fields) {
-            Object value = entry.field.get(owner);
-            Node field = serializeObject(value);
-            object.put(entry.name, field);
-        }
-        return object;
-    }
-
     @SuppressWarnings({ "unchecked", "rawtypes" })
     Node serialize(Object object) throws IllegalArgumentException, IllegalAccessException {
         if (object == null) {
@@ -54,7 +43,18 @@ public class Serializer {
         if (isPrimitive(object)) {
             return Node.of(object);
         }
-        return serialize(object);
+        return serializeObject(object);
+    }
+
+    private Node serializeObject(Object owner) throws IllegalArgumentException, IllegalAccessException {
+        MappedClass<?> mapping = mapper.getMapping(owner.getClass());
+        NodeObject object = new NodeObject();
+        for (MappedField entry : mapping.fields) {
+            Object value = entry.field.get(owner);
+            Node field = serialize(value);
+            object.put(entry.name, field);
+        }
+        return object;
     }
 
     private static boolean isPrimitive(Object object) {
