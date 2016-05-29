@@ -84,7 +84,7 @@ public class HoconWriter extends NodeWriter {
 
     @Override
     public String keySeparator(Node key, Node value) {
-        return key.isPrimitive() && value.isNodeObject() ? padding : ":" + padding;
+        return key.isPrimitive() && value.isNodeObject() ? "" : ":" + padding;
     }
 
     @Override
@@ -94,7 +94,7 @@ public class HoconWriter extends NodeWriter {
 
     @Override
     public String arraySeparator(Node value) {
-        return value.isNodeObject() || value.isNodeArray() || !compact ? "" : ",";
+        return value.isNodeObject() || value.isNodeArray() || value.isPrimitive() ? "" : ",";
     }
 
     @Override

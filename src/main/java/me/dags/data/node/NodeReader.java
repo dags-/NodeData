@@ -139,12 +139,6 @@ public abstract class NodeReader implements Closeable {
         return c;
     }
 
-    protected char peekChar() throws IOException {
-        char c = readChar();
-        previous();
-        return c;
-    }
-
     protected char lastChar() {
         return last;
     }

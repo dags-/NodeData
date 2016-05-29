@@ -19,10 +19,6 @@ public abstract class NodeWriter implements Closeable {
         this.writer = new OutputStreamWriter(outputStream, StringUtils.UTF_8);
     }
 
-    public void flush() throws IOException {
-        writer.flush();
-    }
-
     @Override
     public void close() throws IOException {
         writer.flush();
