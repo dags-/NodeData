@@ -17,6 +17,6 @@ after_success:
   - artefact="$(basename target/nodedata*.jar .jar)"
   - tag="$(cut -d '-' -f 2- <<< $artefact)"
   - git config --global user.name "Travis CI"
-  - export GIT_TAG=$tag#$TRAVIS_BUILD_NUMBER
+  - export GIT_TAG=$tag-$TRAVIS_BUILD_NUMBER
   - git tag $GIT_TAG -a -m "Generated tag from TravisCI build $TRAVIS_BUILD_NUMBER"
   - git push origin $GIT_TAG
