@@ -33,9 +33,7 @@ public class NodeAdapter {
         if (Files.isDirectory(dir)) {
             try {
                 PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:*" + extension);
-                return Files.list(dir)
-                        .filter(matcher::matches)
-                        .map(this::from);
+                return Files.list(dir).filter(path -> matcher.matches(path.getFileName())).map(this::from);
             } catch (IOException e) {
                 e.printStackTrace();
             }
