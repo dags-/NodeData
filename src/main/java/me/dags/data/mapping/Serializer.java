@@ -1,14 +1,14 @@
 package me.dags.data.mapping;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.Map;
-
 import me.dags.data.mapping.MappedClass.MappedField;
 import me.dags.data.node.Node;
 import me.dags.data.node.NodeObject;
 import me.dags.data.node.NodeTypeAdapter;
 import me.dags.data.node.NodeTypeAdapters;
+
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.Map;
 
 public class Serializer {
 

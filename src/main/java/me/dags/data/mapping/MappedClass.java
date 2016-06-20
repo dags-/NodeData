@@ -1,5 +1,7 @@
 package me.dags.data.mapping;
 
+import me.dags.data.mapping.annotation.Mapping;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -7,8 +9,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import me.dags.data.mapping.annotation.Mapping;
 
 public class MappedClass<T> {
 

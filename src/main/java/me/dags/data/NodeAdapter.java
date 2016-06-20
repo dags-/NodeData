@@ -1,22 +1,14 @@
 package me.dags.data;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import me.dags.data.node.*;
+
+import java.io.*;
 import java.net.URL;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import me.dags.data.node.Node;
-import me.dags.data.node.NodeReader;
-import me.dags.data.node.NodeWriter;
-import me.dags.data.node.ReaderProvider;
-import me.dags.data.node.WriterProvider;
+import java.nio.file.PathMatcher;
+import java.util.stream.Stream;
 
 public class NodeAdapter {
 
@@ -35,6 +27,30 @@ public class NodeAdapter {
             e.printStackTrace();
         }
         return Node.NULL;
+    }
+
+    public Stream<Node> fromDir(Path dir, String extension) {
+        if (Files.isDirectory(dir)) {
+            try {
+                PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:*" + extension);
+                return Files.list(dir)
+                        .filter(matcher::matches)
+                        .map(this::from);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return Stream.empty();
+    }
+
+    public Stream<Node> fromDir(File dir, String extension) {
+        if (dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null && files.length > 0) {
+                return Stream.of(files).filter(f -> f.getName().endsWith(extension)).map(this::from);
+            }
+        }
+        return Stream.empty();
     }
 
     public Node from(Path path) {

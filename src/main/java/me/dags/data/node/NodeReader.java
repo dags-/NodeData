@@ -1,12 +1,12 @@
 package me.dags.data.node;
 
+import me.dags.data.StringUtils;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-
-import me.dags.data.StringUtils;
 
 /**
  * @author dags <dags@dags.me>

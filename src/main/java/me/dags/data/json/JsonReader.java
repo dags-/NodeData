@@ -1,10 +1,10 @@
 package me.dags.data.json;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import me.dags.data.node.Node;
 import me.dags.data.node.NodeReader;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class JsonReader extends NodeReader  {
 

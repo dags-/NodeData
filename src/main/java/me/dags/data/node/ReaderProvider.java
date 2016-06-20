@@ -1,9 +1,9 @@
 package me.dags.data.node;
 
-import java.io.InputStream;
-
 import me.dags.data.hocon.HoconReader;
 import me.dags.data.json.JsonReader;
+
+import java.io.InputStream;
 
 public abstract class ReaderProvider {
 

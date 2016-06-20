@@ -1,18 +1,14 @@
 package me.dags.data.mapping;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
 import me.dags.data.mapping.MappedClass.MappedField;
 import me.dags.data.node.Node;
 import me.dags.data.node.NodeArray;
 import me.dags.data.node.NodeObject;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.function.Function;
 
 public class Deserializer {
 

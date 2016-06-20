@@ -1,12 +1,12 @@
 package me.dags.data.hocon;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import me.dags.data.StringUtils;
 import me.dags.data.node.Node;
 import me.dags.data.node.NodeObject;
 import me.dags.data.node.NodeReader;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /*
  * NB not fully compliant with hocon spec

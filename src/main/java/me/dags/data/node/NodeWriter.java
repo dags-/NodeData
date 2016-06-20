@@ -1,14 +1,10 @@
 package me.dags.data.node;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import me.dags.data.StringUtils;
+
+import java.io.*;
 import java.util.Iterator;
 import java.util.Map;
-
-import me.dags.data.StringUtils;
 
 public abstract class NodeWriter implements Closeable {
 

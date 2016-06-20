@@ -1,5 +1,8 @@
 package me.dags.data.mapping;
 
+import me.dags.data.NodeAdapter;
+import me.dags.data.node.Node;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,9 +12,6 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
-import me.dags.data.NodeAdapter;
-import me.dags.data.node.Node;
 
 public class ObjectMapper {
 

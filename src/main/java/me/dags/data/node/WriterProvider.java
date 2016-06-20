@@ -1,9 +1,9 @@
 package me.dags.data.node;
 
-import java.io.OutputStream;
-
 import me.dags.data.hocon.HoconWriter;
 import me.dags.data.json.JsonWriter;
+
+import java.io.OutputStream;
 
 public abstract class WriterProvider {
 

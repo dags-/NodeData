@@ -1,11 +1,11 @@
 package me.dags.data.json;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import me.dags.data.StringUtils;
 import me.dags.data.node.Node;
 import me.dags.data.node.NodeWriter;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class JsonWriter extends NodeWriter {
 
