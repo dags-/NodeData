@@ -92,9 +92,11 @@ public class NodeAdapter {
     }
 
     public String to(Node node) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try (NodeWriter writer = writerProvider.get(out)) {
-            writer.write(node);
+        try  {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            try (NodeWriter writer = writerProvider.get(out)) {
+                writer.write(node);
+            }
             return out.toString("UTF-8");
         } catch (IOException e) {
             return "{}";

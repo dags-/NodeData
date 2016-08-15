@@ -111,6 +111,6 @@ public class HoconReader extends NodeReader {
     }
 
     private boolean breakRaw(char c) {
-        return !Character.isAlphabetic(c) && !Character.isDigit(c) && c != '.' && c != '-';
+        return !Character.isAlphabetic(c) && !Character.isDigit(c) && c != '.' && c != '-' && c != '_';
     }
 }

@@ -30,7 +30,7 @@ public class HoconWriter extends NodeWriter {
     }
 
     @Override
-    public void writeRoot(Node node) throws IOException {
+    protected void writeRoot(Node node) throws IOException {
         if (node.isNodeObject()) {
             Iterator<Map.Entry<Node, Node>> iterator = node.asNodeObject().entries().iterator();
             while (iterator.hasNext()) {
@@ -48,12 +48,12 @@ public class HoconWriter extends NodeWriter {
     }
 
     @Override
-    public void writeString(String string) throws IOException {
+    protected void writeString(String string) throws IOException {
         append(stringUtils.safeString(string));
     }
 
     @Override
-    public void writePrimitiveArray(NodeArray node) throws IOException {
+    protected void writePrimitiveArray(NodeArray node) throws IOException {
         super.writeComplexArray(node);
     }
 
@@ -84,7 +84,7 @@ public class HoconWriter extends NodeWriter {
 
     @Override
     public String keySeparator(Node key, Node value) {
-        return key.isPrimitive() && value.isNodeObject() ? "" : ":" + padding;
+        return key.isPrimitive() && (value.isNodeObject() || value.isNodeArray()) ? " " : ":" + padding;
     }
 
     @Override

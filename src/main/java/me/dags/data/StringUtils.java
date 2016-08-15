@@ -10,8 +10,7 @@ public class StringUtils {
     public static final Charset UTF_8 = Charset.forName("UTF-8");
 
     public String safeString(String s) {
-        String esc = s;
-        return !esc.matches("^[a-zA-Z0-9\\.]*$") || esc.isEmpty() ? '"' + esc + '"' : esc;
+        return !s.matches("^[a-zA-Z0-9\\.\\_\\-]*$") || s.isEmpty() ? '"' + s + '"' : s;
     }
 
     public static String escapeString(String s) {
