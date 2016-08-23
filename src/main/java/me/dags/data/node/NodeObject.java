@@ -1,14 +1,13 @@
 package me.dags.data.node;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class NodeObject extends Node {
 
-    public static final NodeObject EMPTY = new NodeObject(null);
+    static final NodeObject EMPTY = new NodeObject(null);
 
     public NodeObject() {
         super(new LinkedHashMap<>());
@@ -54,6 +53,20 @@ public class NodeObject extends Node {
         return map().get(Node.of(key));
     }
 
+    public Node getOrPut(Node key, Node value) {
+        Node current = get(key);
+        if (!current.isPresent()) {
+            put(key, current = value);
+        }
+        return current;
+    }
+
+    public Node getOrPut(Object k, Object v) {
+        Node key = k instanceof Node ? (Node) k : Node.of(k);
+        Node value = v instanceof Node ? (Node) v : Node.of(v);
+        return getOrPut(key, value);
+    }
+
     public boolean contains(Node key) {
         return map().containsKey(key);
     }
@@ -81,5 +94,13 @@ public class NodeObject extends Node {
         if (node != null) {
             valueConsumer.accept(node);
         }
+    }
+
+    public <T> T map(Object key, Function<Node, T> mapper, T defaultVal) {
+        Node node = map().get(Node.of(key));
+        if (node.isPresent()) {
+            return mapper.apply(node);
+        }
+        return defaultVal;
     }
 }

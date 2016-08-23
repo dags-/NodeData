@@ -23,32 +23,45 @@ public class Node {
     }
 
     public Boolean asBoolean() {
-        if (isPresent() && value instanceof Boolean) {
-            return (Boolean) value;
+        if (isPresent()) {
+            if (value instanceof Boolean) {
+                return (Boolean) value;
+            }
+            if (value instanceof String) {
+                return ((String) value).equalsIgnoreCase("true");
+            }
         }
         return false;
     }
 
     public Number asNumber() {
-        if (isPresent() && value instanceof Number) {
-            return (Number) value;
+        if (isPresent()) {
+            if (value instanceof Number) {
+                return (Number) value;
+            }
+            if (value instanceof String && StringUtils.isNumber((String) value)) {
+                return Double.parseDouble((String) value);
+            }
         }
         return Double.NaN;
     }
 
     public String asString() {
-        if (isPresent() && value instanceof String) {
-            return StringUtils.unEscapeString(value.toString());
+        if (isPresent()) {
+            if (value instanceof String) {
+                return StringUtils.unEscapeString(value.toString());
+            }
+            return value.toString();
         }
         return "null";
     }
 
     public NodeArray asNodeArray() {
-        return null;
+        return NodeArray.EMPTY;
     }
 
     public NodeObject asNodeObject() {
-        return null;
+        return NodeObject.EMPTY;
     }
 
     public boolean isPresent() {
@@ -65,6 +78,10 @@ public class Node {
 
     public boolean isNodeArray() {
         return false;
+    }
+
+    public boolean equalTo(Object other) {
+        return value == other;
     }
 
     @Override

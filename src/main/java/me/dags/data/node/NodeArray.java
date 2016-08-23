@@ -6,7 +6,7 @@ import java.util.List;
 
 public class NodeArray extends Node {
 
-    public static final NodeArray EMPTY = new NodeArray(null);
+    static final NodeArray EMPTY = new NodeArray(null);
 
     public NodeArray() {
         super(new ArrayList<>());
