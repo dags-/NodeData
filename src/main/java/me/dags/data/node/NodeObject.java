@@ -1,9 +1,11 @@
 package me.dags.data.node;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class NodeObject extends Node {
 
@@ -41,19 +43,40 @@ public class NodeObject extends Node {
         return map().isEmpty();
     }
 
+    public Map<Object, Object> toMap() {
+        return NodeTypeAdapters.deserialize(this);
+    }
+
     public Collection<Map.Entry<Node, Node>> entries() {
         return map().entrySet();
     }
 
-    public Node get(Node key) {
-        return map().get(key);
+    public Node get(Object key) {
+        if (isPresent()) {
+            return Node.NULL;
+        }
+        Node node = map().get(Node.of(key));
+        return node == null ? Node.NULL : node;
     }
 
-    public Node get(Object key) {
-        return map().get(Node.of(key));
+    public NodeObject getObject(Object key) {
+        if (isPresent()) {
+            return NodeObject.EMPTY;
+        }
+        Node node = get(key);
+        return node.isPresent() && node.isNodeObject() ? node.asNodeObject() : NodeObject.EMPTY;
+    }
+
+    public NodeArray getArray(Object key) {
+        if (isPresent()) {
+            return NodeArray.EMPTY;
+        }
+        Node node = get(key);
+        return node.isPresent() && node.isNodeArray() ? node.asNodeArray() : NodeArray.EMPTY;
     }
 
     public Node getOrPut(Node key, Node value) {
+        checkEmpty();
         Node current = get(key);
         if (!current.isPresent()) {
             put(key, current = value);
@@ -62,26 +85,29 @@ public class NodeObject extends Node {
     }
 
     public Node getOrPut(Object k, Object v) {
+        checkEmpty();
         Node key = k instanceof Node ? (Node) k : Node.of(k);
         Node value = v instanceof Node ? (Node) v : Node.of(v);
         return getOrPut(key, value);
     }
 
     public boolean contains(Node key) {
-        return map().containsKey(key);
+        return isPresent() && map().containsKey(key);
     }
 
     public boolean contains(Object key) {
-        return map().containsKey(Node.of(key));
+        return isPresent() && map().containsKey(Node.of(key));
     }
 
     public void put(Object k, Object v) {
+        checkEmpty();
         Node key = k instanceof Node ? (Node) k : Node.of(k);
         Node value = v instanceof Node ? (Node) v : Node.of(v);
         putValue(key, value);
     }
 
     public void putValue(Node k, Node v) {
+        checkEmpty();
         map().put(k, v);
     }
 
@@ -90,17 +116,27 @@ public class NodeObject extends Node {
     }
 
     public void ifPresent(Node key, Consumer<Node> valueConsumer) {
-        Node node = get(key);
-        if (node != null) {
-            valueConsumer.accept(node);
+        if (isPresent()) {
+            Node node = get(key);
+            if (node != null) {
+                valueConsumer.accept(node);
+            }
         }
     }
 
     public <T> T map(Object key, Function<Node, T> mapper, T defaultVal) {
-        Node node = map().get(Node.of(key));
-        if (node.isPresent()) {
-            return mapper.apply(node);
+        if (isPresent()) {
+            Node node = map().get(Node.of(key));
+            if (node.isPresent()) {
+                return mapper.apply(node);
+            }
         }
         return defaultVal;
+    }
+
+    private void checkEmpty() {
+        if (!this.isPresent()) {
+            throw new NodeError("Attempted to modify an EMPTY NodeObject!");
+        }
     }
 }

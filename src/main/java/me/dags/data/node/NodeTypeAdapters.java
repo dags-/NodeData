@@ -1,8 +1,6 @@
 package me.dags.data.node;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author dags <dags@dags.me>
@@ -62,6 +60,38 @@ public class NodeTypeAdapters {
             return serialize((Object[]) object);
         }
         return new Node(object);
+    }
+
+    public static Object deserialize(Node node) {
+        if (!node.isPresent()) {
+            return null;
+        }
+        if (node.isNodeObject()) {
+            return deserialize(node.asNodeObject());
+        }
+        if (node.isNodeArray()) {
+            return deserialize(node.asNodeArray());
+        }
+        return node.asObject();
+    }
+
+    public static Map<Object, Object> deserialize(NodeObject object) {
+        Map<Object, Object> map = new HashMap<>();
+        for (Map.Entry<Node, Node> entry : object.entries()) {
+            Object key = deserialize(entry.getKey());
+            Object value = deserialize(entry.getValue());
+            map.put(key, value);
+        }
+        return map;
+    }
+
+    public static List<Object> deserialize(NodeArray nodeArray) {
+        List<Object> list = new ArrayList<>();
+        for (Node node : nodeArray.values()) {
+            Object object = deserialize(node);
+            list.add(object);
+        }
+        return list;
     }
 
     private static class Entry<T> {

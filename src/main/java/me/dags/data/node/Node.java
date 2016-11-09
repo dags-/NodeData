@@ -107,6 +107,9 @@ public class Node {
         if (object == null) {
             return NULL;
         }
+        if (object instanceof Node) {
+            return (Node) object;
+        }
         return NodeTypeAdapters.serialize(object);
     }
 }

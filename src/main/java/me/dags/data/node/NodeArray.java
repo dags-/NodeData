@@ -3,6 +3,8 @@ package me.dags.data.node;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class NodeArray extends Node {
 
@@ -21,6 +23,10 @@ public class NodeArray extends Node {
         return (List<Node>) get();
     }
 
+    public List<Object> toList() {
+        return NodeTypeAdapters.deserialize(this);
+    }
+
     @Override
     public NodeArray asNodeArray() {
         return this;
@@ -36,6 +42,10 @@ public class NodeArray extends Node {
         return this != EMPTY;
     }
 
+    public int count() {
+        return list().size();
+    }
+
     public List<Node> values() {
         return list();
     }
@@ -45,7 +55,15 @@ public class NodeArray extends Node {
     }
 
     public Node get(int index) {
-        return list().get(index);
+        if (isPresent() && index < count()) {
+            Node node = list().get(index);
+            return node != null ? node : Node.NULL;
+        }
+        return Node.NULL;
+    }
+
+    public <T> Stream<T> map(Function<Node, T> mapper) {
+        return values().stream().map(mapper);
     }
 
     public boolean contains(Node key) {
@@ -53,24 +71,34 @@ public class NodeArray extends Node {
     }
 
     public boolean contains(Object value) {
-        for (Node node : list()) {
-            if (node.get().equals(value)) {
-                return true;
+        if (isPresent()) {
+            for (Node node : list()) {
+                if (node.get().equals(value)) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     public void add(Object object) {
+        checkEmpty();
         list().add(Node.of(object));
     }
 
     public void add(Node value) {
+        checkEmpty();
         list().add(value);
     }
 
     public boolean primitiveList() {
         Node first = list().get(0);
         return first != null && first.isPrimitive();
+    }
+
+    private void checkEmpty() {
+        if (!this.isPresent()) {
+            throw new NodeError("Attempted to modify an EMPTY NodeArray!");
+        }
     }
 }
