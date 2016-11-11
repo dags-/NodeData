@@ -60,7 +60,7 @@ public class NodeObject extends Node {
     }
 
     public NodeObject getObject(Object key) {
-        if (isPresent()) {
+        if (!isPresent()) {
             return NodeObject.EMPTY;
         }
         Node node = get(key);
@@ -68,7 +68,7 @@ public class NodeObject extends Node {
     }
 
     public NodeArray getArray(Object key) {
-        if (isPresent()) {
+        if (!isPresent()) {
             return NodeArray.EMPTY;
         }
         Node node = get(key);
