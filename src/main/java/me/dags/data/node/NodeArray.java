@@ -55,7 +55,7 @@ public class NodeArray extends Node {
     }
 
     public Node get(int index) {
-        if (isPresent() && index < count()) {
+        if (isPresent() && index >= 0 && index < count()) {
             Node node = list().get(index);
             return node != null ? node : Node.NULL;
         }

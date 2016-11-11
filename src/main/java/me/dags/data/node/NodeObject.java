@@ -52,7 +52,7 @@ public class NodeObject extends Node {
     }
 
     public Node get(Object key) {
-        if (isPresent()) {
+        if (!isPresent()) {
             return Node.NULL;
         }
         Node node = map().get(Node.of(key));
