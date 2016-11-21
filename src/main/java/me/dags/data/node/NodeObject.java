@@ -126,7 +126,7 @@ public class NodeObject extends Node {
 
     public <T> T map(Object key, Function<Node, T> mapper, T defaultVal) {
         if (isPresent()) {
-            Node node = map().get(Node.of(key));
+            Node node = get(Node.of(key));
             if (node.isPresent()) {
                 return mapper.apply(node);
             }
